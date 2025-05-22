@@ -3,6 +3,7 @@ package ma.eai.titre.manex.batchs.ChargCoursAutoBam.service;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours.ChargementCoursBamDao;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.ChargementCourBam;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.enums.StatusChargement;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.exception.ValidationException;
 
 
 import javax.ejb.Stateless;
@@ -15,13 +16,17 @@ import static ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.enums.StatusCha
 public class ChargementCoursBamService implements IChargmentCoursBamService {
     @Inject
     private ChargementCoursBamDao chargementCoursBamDao;
-    @Override  
+    @Override
     public  void enregistrerChargementCours(ChargementCourBam chargmentCours){
         chargementCoursBamDao.create(chargmentCours);
     }
     @Override
-    public ChargementCourBam recupererChargmentCours(Long id){
-        return chargementCoursBamDao.findById(id);
+    public ChargementCourBam recupererChargmentCours(Long id) throws ValidationException {
+        ChargementCourBam c = chargementCoursBamDao.findById(id);
+        if (c == null) {
+            throw new ValidationException("Chargement introuvable pour l'ID : " + id);
+        }
+        return c;
     }
     @Override
     public      List<ChargementCourBam> getChargementCoursEtatByStatus(StatusChargement statusChargement){
@@ -32,12 +37,18 @@ public class ChargementCoursBamService implements IChargmentCoursBamService {
         return chargementCoursBamDao.findAll();
     }
     @Override
-    public void marquerCommeValider(ChargementCourBam chargementCours){
-        if (chargementCours.getStatus() != V ){
+    public void marquerCommeValider(ChargementCourBam chargementCours) throws ValidationException {
+        if (chargementCours == null) {
+            throw new ValidationException("Chargement introuvable pour validation.");
+        }
+        if (chargementCours.getStatus() != V) {
             chargementCours.setStatus(V);
         }
         chargementCoursBamDao.update(chargementCours);
-
+    }
+    @Override
+    public ChargementCourBam getDernierChargement() {
+        return chargementCoursBamDao.findLatest();
     }
 
 

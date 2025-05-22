@@ -1,6 +1,7 @@
 package ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours;
 
-import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.CoursBam;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.CoursBamTemp;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.filter.CoursFilter;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -10,14 +11,14 @@ import java.util.List;
 import java.util.Map;
 
 @Stateless
-public class CoursBamDao implements ICoursBamDao {
+public class CoursBamTempDao implements ICoursBamTempDao {
     @PersistenceContext(unitName = "ChangeCentral")
     private EntityManager em;
 
     @Override
-    public List<CoursBam> findByCriteria(CoursFilter filter, int offset, int maxResults) {
+    public List<CoursBamTemp> findByCriteria(CoursFilter filter, int offset, int maxResults) {
         Map<String, Object> params = new HashMap<>();
-        StringBuilder jpql = new StringBuilder("SELECT c FROM CoursBam c WHERE 1=1");
+        StringBuilder jpql = new StringBuilder("SELECT c FROM CoursBamTemp c WHERE 1=1");
         buildWhereClause(filter, params, jpql);
         jpql.append(" ORDER BY c.datecours DESC");
 
@@ -32,7 +33,7 @@ public class CoursBamDao implements ICoursBamDao {
     @Override
     public Long countByCriteria(CoursFilter filter) {
         Map<String, Object> params = new HashMap<>();
-        StringBuilder jpql = new StringBuilder("SELECT COUNT(c) FROM CoursBam c WHERE 1=1");
+        StringBuilder jpql = new StringBuilder("SELECT COUNT(c) FROM CoursBamTemp c WHERE 1=1");
         buildWhereClause(filter, params, jpql);
 
         Query query = em.createQuery(jpql.toString());
@@ -42,7 +43,7 @@ public class CoursBamDao implements ICoursBamDao {
     }
 
     private void buildWhereClause(CoursFilter filter, Map<String, Object> params, StringBuilder sb) {
-        if (filter.getDevise() != null && !filter.getDevise().trim().isEmpty()) {
+        if (filter.getDevise() != null) {
             sb.append(" AND c.devise.codeDevise = :devise");
             params.put("devise", filter.getDevise());
         }
@@ -57,17 +58,17 @@ public class CoursBamDao implements ICoursBamDao {
             params.put("dateFin", filter.getDateFin());
         }
 
-        if (filter.getStatut() != null && !filter.getStatut().trim().isEmpty()) {
+        if (filter.getStatut() != null) {
             sb.append(" AND c.etatcours = :statut");
             params.put("statut", filter.getStatut());
         }
 
-        if (filter.getSource() != null && !filter.getSource().trim().isEmpty()) {
+        if (filter.getSource() != null) {
             sb.append(" AND c.source = :source");
             params.put("source", filter.getSource());
         }
 
-        if (filter.getTypeCours() != null && !filter.getTypeCours().trim().isEmpty()) {
+        if (filter.getTypeCours() != null) {
             sb.append(" AND c.typeCours = :typeCours");
             params.put("typeCours", filter.getTypeCours());
         }
@@ -85,12 +86,17 @@ public class CoursBamDao implements ICoursBamDao {
     }
 
     @Override
-    public CoursBam findById(Long id) {
-        return em.find(CoursBam.class, id);
+    public CoursBamTemp findById(Long id) {
+        return em.find(CoursBamTemp.class, id);
     }
 
     @Override
-    public CoursBam save(CoursBam entity) {
+    public void delete(CoursBamTemp entity) {
+        em.remove(em.contains(entity) ? entity : em.merge(entity));
+    }
+
+    @Override
+    public CoursBamTemp save(CoursBamTemp entity) {
         em.persist(entity);
         return entity;
     }

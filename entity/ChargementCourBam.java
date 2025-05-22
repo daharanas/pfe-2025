@@ -25,16 +25,15 @@ public class ChargementCourBam  implements Serializable {
     private BigDecimal coursRb;
     @Column(name = "COURS_VB", precision = 9, scale = 6)
     private BigDecimal coursVb;
-    @Column(name = "SAS_SAISIE", length = 10)
+    @Column(name = "SAS_SAISIE", length = 100)
     private String sasSaisie ;
-    @Column(name = "SAS_VALIDATION", length = 10)
+    @Column(name = "SAS_VALIDATION", length = 100)
     private String sasValidation ;
-    @Column(name = "NOM_FICHIER", length = 10)
+    @Column(name = "NOM_FICHIER", length = 100)
     private String nomFichier ;
     @Temporal(TemporalType.DATE)
     private Date dateSaisie;
     @OneToMany(mappedBy = "chargement" , cascade = CascadeType.ALL)
-    @JoinColumn(name="COURS_BAM_TEMP")
     private List<CoursBamTemp> coursBamTemp;
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS_FICHIER", length = 5)

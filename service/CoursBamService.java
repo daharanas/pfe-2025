@@ -2,78 +2,162 @@ package ma.eai.titre.manex.batchs.ChargCoursAutoBam.service;
 
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours.CoursDao;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours.ICoursBamDao;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours.ICoursBamTempDao;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.Dto.CoursBamDto;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.ChargementCourBam;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.CoursBam;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.CoursBamTemp;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.exception.ValidationException;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.filter.CoursFilter;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import java.util.InputMismatchException;
 import java.util.List;
 
 @Stateless
 public class CoursBamService implements ICoursBamService {
-    @Inject
-    private ICoursBamDao dao;
-    @Inject
-    private ChargementCourBam chargementCourBam;
+    @EJB
+    private ICoursBamDao coursBamDao;
 
-
+    @EJB
+    private ICoursBamTempDao coursBamTempDao;
 
     @Override
-    public void creerCours(CoursBam cours) {
+    public Flux rechercherCours(Flux flux) {
+        Flux fluxSortie = new Flux(true);
+        CoursFilter filter = flux.getObjet().getCoursFilter();
+        Pager pager = filter.getPager();
 
-        dao.save(cours);
+        if (pager == null) {
+            throw new InputMismatchException("Erreur : pagination requise");
+        }
+
+        Long total = coursBamDao.countByCriteria(filter);
+        pager.setTotalSize(total.intValue());
+
+        List<CoursBam> resultats = coursBamDao.findByCriteria(filter, pager.getIndex() - 1, pager.getPageSize());
+
+        fluxSortie.getObjet().setPager(pager);
+        fluxSortie.getObjet().setCoursBamList(resultats);
+        fluxSortie.getObjet().setNbResultats(total);
+        return fluxSortie;
     }
 
     @Override
-    public void modifierCours(CoursBam cours) {
-        dao.update(cours);
+    public Flux rechercherCoursTemp(Flux flux) {
+        Flux fluxSortie = new Flux(true);
+        CoursFilter filter = flux.getObjet().getCoursFilter();
+        Pager pager = filter.getPager();
+
+        if (pager == null) {
+            throw new InputMismatchException("Erreur : pagination requise");
+        }
+
+        Long total = coursBamTempDao.countByCriteria(filter);
+        pager.setTotalSize(total.intValue());
+
+        List<CoursBamTemp> resultats = coursBamTempDao.findByCriteria(filter, pager.getIndex() - 1, pager.getPageSize());
+
+        fluxSortie.getObjet().setPager(pager);
+        fluxSortie.getObjet().setCoursBamTemps(resultats);
+        fluxSortie.getObjet().setNbResultats(total);
+        return fluxSortie;
+    }
+    @Override
+    public Flux archiverCoursDuJour(Flux flux) {
+        Flux fluxSortie = new Flux(true);
+        CoursFilter filter = flux.getObjet().getCoursFilter();
+
+        if (filter.getDateDebut() == null) {
+            throw new IllegalArgumentException("Date de traitement obligatoire pour l'archivage.");
+        }
+
+        // On cherche tous les cours non archivés pour la date fournie
+        filter.setStatut("C"); // Seulement les cours confirmés (validés)
+
+        List<CoursBam> coursDuJour = coursBamDao.findByCriteria(filter, 0, Integer.MAX_VALUE);
+
+        for (CoursBam cours : coursDuJour) {
+            cours.setEtatcours("A"); // A = Archivé
+            coursBamDao.save(cours); // On utilise save (persist) ou update selon ton implémentation exacte
+        }
+
+        fluxSortie.getObjet().setCoursBamList(coursDuJour);
+        return fluxSortie;
     }
 
     @Override
-    public void supprimerCours(Long id) {
-        dao.delete(id);
+    public Flux getCoursById(Flux flux) {
+        Flux fluxSortie = new Flux(true);
+        Long id = flux.getObjet().getCoursBam().getId();
+        CoursBam cours = coursBamDao.findById(id);
+        fluxSortie.getObjet().setCoursBam(cours);
+        return fluxSortie;
     }
 
     @Override
-    public CoursBam getCoursById(Long id) {
-        return dao.findById(id);
+    public Flux getCoursTempById(Flux flux) {
+        Flux fluxSortie = new Flux(true);
+        Long id = flux.getObjet().getCoursBamTemp().getId();
+        CoursBamTemp coursTemp = coursBamTempDao.findById(id);
+        fluxSortie.getObjet().setCoursBamTemp(coursTemp);
+        return fluxSortie;
     }
 
     @Override
-    public List<CoursBam> getAllCours() {
-        return dao.findAll();
+    public Flux validerCoursTemp(Flux flux) {
+        Flux fluxSortie = new Flux(true);
+        CoursBamTemp temp = flux.getObjet().getCoursBamTemp();
+
+        // Validation métier (exemple)
+        if (temp.getDevise() == null || temp.getDatecours() == null) {
+            throw new IllegalArgumentException("Devise ou date du cours manquante");
+        }
+
+        // Conversion CoursBamTemp → CoursBam
+        CoursBam validé = new CoursBam();
+        validé.setDevise(temp.getDevise());
+        validé.setDatecours(temp.getDatecours());
+        validé.setMid(temp.getMid());
+        validé.setRb(temp.getRb());
+        validé.setVb(temp.getVb());
+        validé.setAcs(temp.getAcs());
+        validé.setVcs(temp.getVcs());
+        validé.setEtatcours("C"); // C = confirmé
+        validé.setSource(temp.getSource());
+
+        // Sauvegarde
+        coursBamDao.save(validé);
+
+        // Suppression ou archivage du temporaire
+        coursBamTempDao.delete(temp);
+
+        fluxSortie.getObjet().setCoursBam(validé);
+        return fluxSortie;
+    }
+    public List<CoursBamTemp> findAllCoursTemp() {
+        return coursBamTempDao.findByCriteria(new CoursFilter(), 0, Integer.MAX_VALUE);
     }
 
-    @Override
-    public CoursBamDto toDto(CoursBam cours) {
-        CoursBamDto dto = new CoursBamDto();
-        dto.setIdcoursbam(cours.getIdcoursbam());
-        dto.setCoursrb(cours.getCoursrb());
-        dto.setCoursvb(cours.getCoursvb());
-        dto.setCoursMidBam(cours.getCoursMidBam());
-        dto.setCoursMinBam(cours.getCoursMinBam());
-        dto.setCoursMaxBam(cours.getCoursMaxBam());
-        dto.setMargeAchatMaxBam(cours.getMargeAchatMaxBam());
-        dto.setMargeVenteMaxBam(cours.getMargeVenteMaxBam());
-        dto.setMargeAchatMax(cours.getMargeAchatMax());
-        dto.setMargeVenteMax(cours.getMargeVenteMax());
-        return dto;
+    public CoursBamTemp findCoursTempById(Long id) throws ValidationException {
+        CoursBamTemp temp = coursBamTempDao.findById(id);
+        if (temp == null) {
+            throw new ValidationException("Cours temporaire introuvable avec l'id : " + id);
+        }
+        return temp;
     }
 
-    @Override
-    public CoursBam fromDto(CoursBamDto dto) {
-        CoursBam cours = new CoursBam();
-        cours.setIdcoursbam(dto.getIdcoursbam());
-        cours.setCoursrb(dto.getCoursrb());
-        cours.setCoursvb(dto.getCoursvb());
-        cours.setCoursMinBam(dto.getCoursMidBam());
-        cours.setCoursMinBam(dto.getCoursMinBam());
-        cours.setCoursMaxBam(dto.getCoursMaxBam());
-        cours.setMargeAchatMaxBam(dto.getMargeAchatMaxBam());
-        cours.setMargeVenteMaxBam(dto.getMargeVenteMaxBam());
-        cours.setMargeAchatMax(dto.getMargeAchatMax());
-        cours.setMargeVenteMax(dto.getMargeVenteMax());
-        return cours;
+    public void saveCoursTemp(CoursBamTemp entity) {
+        coursBamTempDao.save(entity);
+    }
+
+    public void deleteCoursTemp(Long id) throws ValidationException {
+        CoursBamTemp temp = coursBamTempDao.findById(id);
+        if (temp == null) {
+            throw new ValidationException("Impossible de supprimer : cours temporaire introuvable.");
+        }
+        coursBamTempDao.delete(temp);
     }
 }

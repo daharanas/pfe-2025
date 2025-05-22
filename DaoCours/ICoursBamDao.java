@@ -5,9 +5,8 @@ import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.CoursBam;
 import java.util.List;
 
 public interface ICoursBamDao {
-    void save(CoursBam cours);
-    void update(CoursBam cours);
-    void delete(Long id);
+    List<CoursBam> findByCriteria(CoursFilter filter, int offset, int maxResults);
+    Long countByCriteria(CoursFilter filter);
     CoursBam findById(Long id);
-    List<CoursBam> findAll();
+    CoursBam save(CoursBam entity);
 }

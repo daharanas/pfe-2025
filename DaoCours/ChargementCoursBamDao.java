@@ -46,5 +46,29 @@ public class ChargementCoursBamDao implements IChargementCoursBam {
         List<ChargementCourBam> list = query.getResultList();
         return list;
     }
+    @Override
+    public ChargementCourBam findLatest() {
+        try {
+            Query query = entityManager.createQuery(
+                    "SELECT c FROM ChargementCourBam c ORDER BY c.dateSaisie DESC"
+            );
+            query.setMaxResults(1);
+            List result = query.getResultList();
+            return result.isEmpty() ? null : (ChargementCourBam) result.get(0);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+
+
+    @Override
+    public List<ChargementCourBam> findAll(int offset, int maxResults) {
+        Query query = entityManager.createQuery("SELECT c FROM ChargementCourBam c");
+        query.setFirstResult(offset);
+        query.setMaxResults(maxResults);
+        return query.getResultList();
+    }
 
 }

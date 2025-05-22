@@ -12,7 +12,7 @@ public interface IChargementCoursBam {
    ChargementCourBam findById(Long id);
    List<ChargementCourBam> findAll();
    List<ChargementCourBam> findByChargementStatus(StatusChargement status);
-
-
+   ChargementCourBam findLatest();
+   List<ChargementCourBam> findAll(int offset, int maxResults);
 
 }
