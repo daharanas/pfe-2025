@@ -10,7 +10,7 @@ import java.util.Calendar;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "coursFilter")
 public class CoursFilter {
-    private String devise;       // Code devise (ex: EUR, USD)
+    private String devise;       // Code devise
     private String statut;       // Etat du cours
     private String typeCours;    // MID, RB, VB,
     private String source;       // EXCEL, MANUEL
@@ -23,9 +23,9 @@ public class CoursFilter {
     @XmlJavaTypeAdapter(DevBoosterCalendarAdapter.class)
     private Calendar dateFin;
 
-    private Pager pager;         // Pour pagination
+    private Pager pager;
 
-    // === GETTERS & SETTERS ===
+
 
 
     public String getDevise() {

@@ -8,11 +8,21 @@ import ma.eai.titre.manex.batchs.ChargCoursAutoBam.exception.ValidationException
 import java.util.List;
 
 public interface IChargmentCoursBamService {
-    void enregistrerChargementCours(ChargementCourBam chargmentCours);
-    ChargementCourBam recupererChargmentCours(Long id) throws ValidationException;
-    List<ChargementCourBam> getChargementCoursEtatByStatus(StatusChargement statusChargement);
-    List<ChargementCourBam> getAllChargementCours();
-    void marquerCommeValider(ChargementCourBam chargementCours) throws ValidationException;
-    ChargementCourBam getDernierChargement();
+    // Consultation
+    Flux rechercherChargements(Flux flux);
+    Flux getChargementById(Flux flux);
+
+    // Création / mise à jour
+    void enregistrerChargement(ChargementCourBam entity);
+
+    // Accès aux cours
+    Flux getCoursParChargement(Flux flux);
+
+    // Validation métier
+    Flux validerChargement(Flux flux);
+    Flux rejeterChargement(Flux flux);
+
+    // Nettoyage / annulation
+    void supprimerChargement(Long id) throws ValidationException;
 
 }
