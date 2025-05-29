@@ -97,8 +97,8 @@ public class ChargementCoursBamService  implements ChargementCoursBamService {
 
             CoursBam cours = new CoursBam();
             cours.setDevise(temp.getDevise());
-            cours.setDatecours(temp.getDatecours());
-            cours.setMid(temp.getMid());
+            cours.setDateCoursBam(temp.getDatecoursBamTemp().getTime());
+            cours.setCoursMidBam(temp.getMid());
             cours.setRb(temp.getRb());
             cours.setVb(temp.getVb());
             cours.setAcs(temp.getAcs());

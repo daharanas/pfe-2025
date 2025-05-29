@@ -17,8 +17,6 @@ public class ChargementCoursFilter {
 
     private Pager pager;
 
-    // === Getters & Setters ===
-
     public String getStatut() {
         return statut;
     }
