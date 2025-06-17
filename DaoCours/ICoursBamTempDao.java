@@ -1,6 +1,7 @@
 package ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours;
 
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.CoursBamTemp;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.filter.CoursFilter;
 
 import java.util.List;
 

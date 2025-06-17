@@ -2,6 +2,7 @@ package ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours;
 
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.ChargementCourBam;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.enums.StatusChargement;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.filter.ChargementCoursFilter;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

@@ -7,8 +7,8 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.util.Calendar;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "coursFilter")
+/*@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "coursFilter")*/
 public class CoursFilter {
     private String devise;       // Code devise
     private String statut;       // Etat du cours

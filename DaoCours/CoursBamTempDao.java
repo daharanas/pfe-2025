@@ -16,7 +16,7 @@ public class CoursBamTempDao implements ICoursBamTempDao {
     private EntityManager em;
 
     @Override
-    public List<CoursBamTemp> findByCriteria(CoursFilter filter, int offset, int maxResults) {
+    public List<CoursBamTemp> findByCriteria(CoursFilter filter , int offset, int maxResults) {
         Map<String, Object> params = new HashMap<>();
         StringBuilder jpql = new StringBuilder("SELECT c FROM CoursBamTemp c WHERE 1=1");
         buildWhereClause(filter, params, jpql);
@@ -31,7 +31,7 @@ public class CoursBamTempDao implements ICoursBamTempDao {
     }
 
     @Override
-    public Long countByCriteria(CoursFilter filter) {
+    public Long countByCriteria( CoursFilter filter) {
         Map<String, Object> params = new HashMap<>();
         StringBuilder jpql = new StringBuilder("SELECT COUNT(c) FROM CoursBamTemp c WHERE 1=1");
         buildWhereClause(filter, params, jpql);

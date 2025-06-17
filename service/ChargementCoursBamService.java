@@ -22,7 +22,7 @@ import java.util.List;
 import static ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.enums.StatusChargement.V;
 
 @Stateless
-public class ChargementCoursBamService  implements ChargementCoursBamService {
+public class ChargementCoursBamService  implements IChargmentCoursBamService {
 
     @EJB
     private IChargementCoursBam chargementDao;
@@ -73,6 +73,99 @@ public class ChargementCoursBamService  implements ChargementCoursBamService {
         fluxSortie.getObjet().setChargement(chargement);
         return fluxSortie;
     }
+    @Override
+    public Flux getCoursParChargement(Flux flux) {
+        Flux fluxSortie = new Flux(true);
+
+        try {
+            // 1. Extraire l'ID du chargement
+            Long idChargement = flux.getObjet().getChargement().getIdCoursCargement();
+
+            if (idChargement == null) {
+                throw new ValidationException("ID du chargement manquant dans le flux");
+            }
+
+            // 2. Récupérer
+            //les cours liés à ce chargement
+            List<CoursBam> coursList = coursBamDao.findByChargementId(idChargement);
+
+            // 3. Alimenter la sortie
+            fluxSortie.getObjet().setCoursBamList(coursList);
+            fluxSortie.getObjet().setNbResultats(coursList.size());
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des cours liés au chargement : " + e.getMessage(), e);
+        }
+
+        return fluxSortie;
+    }
+    @Override
+    public Flux rejeterChargement(Flux flux) {
+        Flux fluxSortie = new Flux(true);
+
+        try {
+            Long idChargement = flux.getObjet().getChargement().getIdCoursCargement();
+
+            if (idChargement == null) {
+                throw new ValidationException("ID du chargement manquant dans le flux");
+            }
+
+            // 1. Charger le chargement concerné
+            ChargementCourBam chargement = chargementDao.findById(idChargement);
+
+            if (chargement == null) {
+                throw new ValidationException("Aucun chargement trouvé avec l'ID : " + idChargement);
+            }
+
+            // 2. Supprimer tous les cours temporaires associés
+            for (CoursBamTemp temp : chargement.getCoursBamTemps()) {
+                coursBamTempDao.delete(temp);
+            }
+
+            // 3. Mettre à jour le statut
+            chargement.setStatus(StatusChargement.REJETE);
+            chargement.setSasValidation(flux.getEntete().getUser_sas());
+            chargement.setDateSaisie(new Date());
+
+            // 4. Sauvegarder
+            chargementDao.save(chargement);
+
+            // 5. Retourner le flux
+            fluxSortie.getObjet().setChargement(chargement);
+
+        } catch (ValidationException e) {
+            throw new RuntimeException("Erreur de validation lors du rejet du chargement : " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur technique lors du rejet du chargement : " + e.getMessage(), e);
+        }
+
+        return fluxSortie;
+    }
+    @Override
+    public void supprimerChargement(Long id) throws ValidationException {
+        if (id == null) {
+            throw new ValidationException("ID de chargement non fourni.");
+        }
+
+        ChargementCourBam chargement = chargementDao.findById(id);
+
+        if (chargement == null) {
+            throw new ValidationException("Chargement introuvable pour l'ID : " + id);
+        }
+
+        // Supprimer tous les cours temporaires liés
+        List<CoursBamTemp> coursTempList = chargement.getCoursBamTemp();
+        if (coursTempList != null) {
+            for (CoursBamTemp temp : coursTempList) {
+                coursBamTempDao.delete(temp);
+            }
+        }
+
+        // Supprimer le chargement lui-même
+        chargementDao.delete(chargement);
+    }
+      
+
 
     @Override
     public void enregistrerChargement(ChargementCourBam entity) {
@@ -92,18 +185,18 @@ public class ChargementCoursBamService  implements ChargementCoursBamService {
 
         List<CoursBam> coursValides = new ArrayList<>();
 
-        for (CoursBamTemp temp : chargement.getCoursBamTemps()) {
-            if (!"T".equals(temp.getEtatcours())) continue;
+        for (CoursBamTemp temp : chargement.getCoursBamTemp()) {
+            if (!"T".equals(temp.getEtatCoursBam())) continue;
 
             CoursBam cours = new CoursBam();
             cours.setDevise(temp.getDevise());
             cours.setDateCoursBam(temp.getDatecoursBamTemp().getTime());
             cours.setCoursMidBam(temp.getMid());
-            cours.setRb(temp.getRb());
-            cours.setVb(temp.getVb());
+            cours.setCoursrb(temp.getRb());
+            cours.setCoursvb(temp.getVb());
             cours.setAcs(temp.getAcs());
             cours.setVcs(temp.getVcs());
-            cours.setEtatcours("C");
+            cours.setEtatCoursBam("C");
             cours.setSource(temp.getSource());
             cours.setChargement(null);
 
