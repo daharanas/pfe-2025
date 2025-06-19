@@ -80,7 +80,7 @@ public class CoursBamService implements ICoursBamService {
         List<CoursBam> coursDuJour = coursBamDao.findByCriteria(filter, 0, Integer.MAX_VALUE);
 
         for (CoursBam cours : coursDuJour) {
-            cours.setEtatcours("A"); // A = Archivé
+            cours.setEtatCoursBam("A"); // A = Archivé
             coursBamDao.save(cours); // On utilise save (persist) ou update selon ton implémentation exacte
         }
 
@@ -117,24 +117,24 @@ public class CoursBamService implements ICoursBamService {
         }
 
         // Conversion CoursBamTemp → CoursBam
-        CoursBam validé = new CoursBam();
-        validé.setDevise(temp.getDevise());
-        validé.setDatecours(temp.getDatecours());
-        validé.setMid(temp.getMid());
-        validé.setRb(temp.getRb());
-        validé.setVb(temp.getVb());
-        validé.setAcs(temp.getAcs());
-        validé.setVcs(temp.getVcs());
-        validé.setEtatcours("C"); // C = confirmé
-        validé.setSource(temp.getSource());
+        CoursBam valide = new CoursBam();
+        valide.setDevise(temp.getDevise());
+        valide.setDateCoursBam(temp.getDatecoursBamTemp());
+        valide.setCoursMidBam(temp.getIdCoursBamTemp());
+        valide.setCoursrb(temp.getRb());
+        valide.setVb(temp.getVb());
+        valide.setAcs(temp.getAcs());
+        valide.setVcs(temp.getVcs());
+        valide.setEtatCoursBam("C"); // C = confirmé
+        valide.setSource(temp.getSource());
 
         // Sauvegarde
-        coursBamDao.save(validé);
+        coursBamDao.save(valide);
 
         // Suppression ou archivage du temporaire
         coursBamTempDao.delete(temp);
 
-        fluxSortie.getObjet().setCoursBam(validé);
+        fluxSortie.getObjet().setCoursBam(valide);
         return fluxSortie;
     }
     public List<CoursBamTemp> findAllCoursTemp() {

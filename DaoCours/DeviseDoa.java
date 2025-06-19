@@ -3,6 +3,7 @@ package ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.Devise;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
@@ -34,20 +35,28 @@ public class DeviseDoa implements DeviseIDoa {
     }
 
     @Override
-    public void save(Devise devise) {
-        em.persist(devise);
+    public void save(Object object) {
+        em.persist(object);
     }
 
     @Override
-    public void update(Devise devise) {
-        em.merge(devise);
+    public void update(Object object)
+    {
+        em.merge(object);
     }
-
     @Override
-    public void delete(Long id) {
-        Devise devise = em.find(Devise.class, id);
-        if (devise != null) {
-            em.remove(devise);
+    public <E> E get(Class<E> entityClass, Long pk) {
+        E entity = this.em.find(entityClass, pk);
+        if (entity == null) {
+            String msg = "Err, '" + entityClass + "' object with id '" + pk + "' not found...";
+            throw new EntityNotFoundException(msg);
         }
+        return entity;
     }
+    @Override
+    public void delete(Object object) {
+
+            em.remove(object);
+        }
+
 }

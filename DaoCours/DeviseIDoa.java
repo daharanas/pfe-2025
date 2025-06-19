@@ -8,7 +8,8 @@ public interface DeviseIDoa {
     Devise findById(Long id);
     List<Devise> findAll();
     List<Devise> findByCodeIso(String codeIso);
-    void save(Devise devise);
-    void update(Devise devise);
-    void delete(Long id);
+    void save(Object object);
+    <E> E get(Class<E> entityClass, Long pk);
+    void update(Object object);
+    void delete(Object object);
 }
