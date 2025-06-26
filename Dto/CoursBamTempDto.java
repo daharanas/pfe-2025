@@ -22,6 +22,70 @@ public class CoursBamTempDto implements Serializable {
     private BigDecimal coursvb;
     private Calendar dateCoursBamTemp;
     private DeviseDto devise;
+    private BigDecimal mid;
+    private BigDecimal rb;
+    private BigDecimal vb;
+    private BigDecimal acs;
+    private BigDecimal vcs;
+    private String source;
+
+
+    public CoursBamTempDto(BigDecimal mid, BigDecimal rb, BigDecimal vb, BigDecimal acs, BigDecimal vcs, String source) {
+        this.mid = mid;
+        this.rb = rb;
+        this.vb = vb;
+        this.acs = acs;
+        this.vcs = vcs;
+        this.source = source;
+    }
+
+    public BigDecimal getMid() {
+        return mid;
+    }
+
+    public void setMid(BigDecimal mid) {
+        this.mid = mid;
+    }
+
+    public BigDecimal getRb() {
+        return rb;
+    }
+
+    public void setRb(BigDecimal rb) {
+        this.rb = rb;
+    }
+
+    public BigDecimal getVb() {
+        return vb;
+    }
+
+    public void setVb(BigDecimal vb) {
+        this.vb = vb;
+    }
+
+    public BigDecimal getAcs() {
+        return acs;
+    }
+
+    public void setAcs(BigDecimal acs) {
+        this.acs = acs;
+    }
+
+    public BigDecimal getVcs() {
+        return vcs;
+    }
+
+    public void setVcs(BigDecimal vcs) {
+        this.vcs = vcs;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public CoursBamTempDto(Long idCoursBamTemp, BigDecimal margerb, BigDecimal margevb, BigDecimal coursrb, BigDecimal coursvb, Calendar dateCoursBamTemp , EtatCours etatCoursBam , DeviseDto devise)   {
         this.idCoursBamTemp = idCoursBamTemp;

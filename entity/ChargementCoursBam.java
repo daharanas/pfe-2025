@@ -3,7 +3,6 @@ package ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.enums.StatusChargement;
-import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.CoursBamTemp;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,12 +13,12 @@ import java.util.List;
 @Entity
 @Table(name = "CHARGEMENT_COURS_BAM")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ChargementCourBam  implements Serializable {
+public class ChargementCoursBam implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @SequenceGenerator(name="CHARGMENT_COURS_BAM_IDCOURSBAM_GENERATOR", sequenceName="S_COURS_BAM")
     @Column(name = "ID_COURS_CHARGEMENT", unique = true, nullable = false, precision = 6)
-    private Long idCoursCargement;
+    private Long idCoursChargement;
 
     @Column(name = "COURS_RB", precision = 9, scale = 6)
     private BigDecimal coursRb;
@@ -38,12 +37,12 @@ public class ChargementCourBam  implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS_FICHIER", length = 5)
     private StatusChargement status;
-    public ChargementCourBam() {
+    public ChargementCoursBam() {
         super();
     }
 
-    public ChargementCourBam(Long idCoursCargement, BigDecimal coursRb, BigDecimal coursVb, String sasSaisie, String sasValidation, String nomFichier, Date datesaiisie, StatusChargement status, List<CoursBamTemp> coursBamTemp) {
-        this.idCoursCargement = idCoursCargement;
+    public ChargementCoursBam(Long idCoursCargement, BigDecimal coursRb, BigDecimal coursVb, String sasSaisie, String sasValidation, String nomFichier, Date datesaiisie, StatusChargement status, List<CoursBamTemp> coursBamTemp) {
+        this.idCoursChargement = idCoursCargement;
         this.coursRb = coursRb;
         this.coursVb = coursVb;
         this.sasSaisie = sasSaisie;
@@ -54,12 +53,12 @@ public class ChargementCourBam  implements Serializable {
         this.coursBamTemp = coursBamTemp;
     }
 
-    public Long getIdCoursCargement() {
-        return idCoursCargement;
+    public Long getIdCoursChargement() {
+        return idCoursChargement;
     }
 
-    public void setIdCoursCargement(Long idCoursCargement) {
-        this.idCoursCargement = idCoursCargement;
+    public void setIdCoursChargement(Long idCoursCargement) {
+        this.idCoursChargement = idCoursCargement;
     }
 
     public BigDecimal getCoursRb() {

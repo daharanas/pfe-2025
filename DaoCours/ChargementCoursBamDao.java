@@ -1,6 +1,6 @@
 package ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours;
 
-import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.ChargementCourBam;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.ChargementCoursBam;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.enums.StatusChargement;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.filter.ChargementCoursFilter;
 
@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 @Stateless
@@ -17,9 +18,9 @@ public class ChargementCoursBamDao implements IChargementCoursBam {
     private EntityManager em;
 
     @Override
-    public List<ChargementCourBam> findByCriteria(ChargementCoursFilter filter, int offset, int maxResults) {
-        Map<String, Object> params = new HashMap<>();
-        StringBuilder sb = new StringBuilder("SELECT c FROM ChargementCourBam c WHERE 1=1");
+    public List<ChargementCoursBam> findByCriteria(ChargementCoursFilter filter, int offset, int maxResults) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        StringBuilder sb = new StringBuilder("SELECT c FROM ChargementCoursBam c WHERE 1=1");
         buildWhereClause(filter, params, sb);
         sb.append(" ORDER BY c.dateSaisie DESC");
 
@@ -32,8 +33,8 @@ public class ChargementCoursBamDao implements IChargementCoursBam {
 
     @Override
     public Long countByCriteria(ChargementCoursFilter filter) {
-        Map<String, Object> params = new HashMap<>();
-        StringBuilder sb = new StringBuilder("SELECT COUNT(c) FROM ChargementCourBam c WHERE 1=1");
+        Map<String, Object> params = new HashMap<String, Object>();
+        StringBuilder sb = new StringBuilder("SELECT COUNT(c) FROM ChargementCoursBam c WHERE 1=1");
         buildWhereClause(filter, params, sb);
 
         Query query = em.createQuery(sb.toString());
@@ -42,12 +43,12 @@ public class ChargementCoursBamDao implements IChargementCoursBam {
     }
 
     @Override
-    public ChargementCourBam findById(Long id) {
-        return em.find(ChargementCourBam.class, id);
+    public ChargementCoursBam findById(Long id) {
+        return em.find(ChargementCoursBam.class, id);
     }
 
     @Override
-    public void save(ChargementCourBam entity) {
+    public void save(ChargementCoursBam entity) {
         em.persist(entity);
     }
 
@@ -77,11 +78,23 @@ public class ChargementCoursBamDao implements IChargementCoursBam {
             params.put("dateFin", filter.getDateFin().getTime());
         }
     }
-
-    private void applyParams(Query query, Map<String, Object> params) {
+    @Override
+    public void applyParams(Query query, Map<String, Object> params) {
         for (Map.Entry<String, Object> e : params.entrySet()) {
             query.setParameter(e.getKey(), e.getValue());
         }
     }
+    @Override
+    public void update(Object object){
+
+        em.merge(object);
+    }
+    @Override
+    public void remove(Object object){
+
+        em.remove(object);
+    }
+
+
 
 }

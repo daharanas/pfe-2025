@@ -1,25 +1,23 @@
 package ma.eai.titre.manex.batchs.ChargCoursAutoBam.service;
 
-import ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours.ChargementCoursBamDao;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours.IChargementCoursBam;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours.ICoursBamDao;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours.ICoursBamTempDao;
-import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.ChargementCourBam;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.ChargementCoursBam;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.CoursBam;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.CoursBamTemp;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.enums.EtatCours;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.enums.StatusChargement;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.exception.ValidationException;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.filter.ChargementCoursFilter;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.xmlMapping.Flux;
 
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.List;
-
-import static ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.enums.StatusChargement.V;
 
 @Stateless
 public class ChargementCoursBamService  implements IChargmentCoursBamService {
@@ -48,7 +46,7 @@ public class ChargementCoursBamService  implements IChargmentCoursBamService {
             Long total = chargementDao.countByCriteria(filter);
             pager.setTotalSize(total.intValue());
 
-            List<ChargementCourBam> chargements = chargementDao.findByCriteria(
+            List<ChargementCoursBam> chargements = chargementDao.findByCriteria(
                     filter,
                     pager.getIndex() - 1,
                     pager.getPageSize()
@@ -69,7 +67,7 @@ public class ChargementCoursBamService  implements IChargmentCoursBamService {
     public Flux getChargementById(Flux flux) {
         Flux fluxSortie = new Flux(true);
         Long id = flux.getObjet().getChargement().getIdCoursCargement();
-        ChargementCourBam chargement = chargementDao.findById(id);
+        ChargementCoursBam chargement = chargementDao.findById(id);
         fluxSortie.getObjet().setChargement(chargement);
         return fluxSortie;
     }
@@ -111,14 +109,14 @@ public class ChargementCoursBamService  implements IChargmentCoursBamService {
             }
 
             // 1. Charger le chargement concerné
-            ChargementCourBam chargement = chargementDao.findById(idChargement);
+            ChargementCoursBam chargement = chargementDao.findById(idChargement);
 
             if (chargement == null) {
                 throw new ValidationException("Aucun chargement trouvé avec l'ID : " + idChargement);
             }
 
             // 2. Supprimer tous les cours temporaires associés
-            for (CoursBamTemp temp : chargement.getCoursBamTemps()) {
+            for (CoursBamTemp temp : chargement.getCoursBamTemp()) {
                 coursBamTempDao.delete(temp);
             }
 
@@ -147,7 +145,7 @@ public class ChargementCoursBamService  implements IChargmentCoursBamService {
             throw new ValidationException("ID de chargement non fourni.");
         }
 
-        ChargementCourBam chargement = chargementDao.findById(id);
+        ChargementCoursBam chargement = chargementDao.findById(id);
 
         if (chargement == null) {
             throw new ValidationException("Chargement introuvable pour l'ID : " + id);
@@ -162,13 +160,13 @@ public class ChargementCoursBamService  implements IChargmentCoursBamService {
         }
 
         // Supprimer le chargement lui-même
-        chargementDao.delete(chargement);
+        chargementDao.remove(chargement);
     }
       
 
 
     @Override
-    public void enregistrerChargement(ChargementCourBam entity) {
+    public void enregistrerChargement(ChargementCoursBam entity) {
         chargementDao.save(entity);
     }
 
@@ -177,7 +175,7 @@ public class ChargementCoursBamService  implements IChargmentCoursBamService {
         Flux fluxSortie = new Flux(true);
 
         Long idChargement = flux.getObjet().getChargement().getIdCoursCargement();
-        ChargementCourBam chargement = chargementDao.findById(idChargement);
+        ChargementCoursBam chargement = chargementDao.findById(idChargement);
 
         if (chargement == null) {
             throw new ValidationException("Chargement introuvable avec l'id : " + idChargement);
@@ -196,9 +194,9 @@ public class ChargementCoursBamService  implements IChargmentCoursBamService {
             cours.setCoursvb(temp.getVb());
             cours.setAcs(temp.getAcs());
             cours.setVcs(temp.getVcs());
-            cours.setEtatCoursBam("C");
+            cours.setEtatCoursBam(EtatCours.T);
             cours.setSource(temp.getSource());
-            cours.setChargement(null);
+            cours.setChargement(chargement);
 
             coursBamDao.save(cours);
             coursValides.add(cours);
@@ -209,7 +207,7 @@ public class ChargementCoursBamService  implements IChargmentCoursBamService {
         chargement.setDateSaisie(new Date());
         chargementDao.save(chargement);
 
-        for (CoursBamTemp temp : chargement.getCoursBamTemps()) {
+        for (CoursBamTemp temp : chargement.getCoursBamTemp()) {
             coursBamTempDao.delete(temp);
         }
 

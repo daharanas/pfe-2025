@@ -2,14 +2,12 @@ package ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.enums.EtatCours;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.List;
 
 @Entity
 @Table(name="COURS_TEMP")
@@ -30,19 +28,47 @@ public class CoursBamTemp implements Serializable {
     private BigDecimal margerb;
     @ManyToOne
     @JoinColumn(name = "CHARGEMENT_ID")
-    private ChargementCourBam chargement ;
+    private ChargementCoursBam chargement ;
+    @Column(name="MID",precision=3, scale=2)
+    private BigDecimal mid;
+    @Column(name="RB",precision=3, scale=2)
+    private BigDecimal rb;
+    @Column(name="VB",precision=3, scale=2)
+    private BigDecimal vb;
+    @Column(name="ACS",precision=3, scale=2)
+    private BigDecimal acs;
+    @Column(name="VCS",precision=3, scale=2)
+    private BigDecimal vcs;
+    @Column(name="SOURCE",precision=3, scale=2)
+    private String source;
     @ManyToOne
     @JoinColumn(name="IDDEVISE", nullable=false)
     private Devise devise;
 
-
+    public CoursBamTemp(long idCoursBamTemp, BigDecimal coursrb, EtatCours etatCoursBam, BigDecimal coursvb, BigDecimal margerb, ChargementCoursBam chargement, BigDecimal mid, BigDecimal rb, BigDecimal vb, BigDecimal acs, BigDecimal vcs, String source, Devise devise, BigDecimal margevb, Calendar datecoursBamTemp) {
+        this.idCoursBamTemp = idCoursBamTemp;
+        this.coursrb = coursrb;
+        this.etatCoursBam = etatCoursBam;
+        this.coursvb = coursvb;
+        this.margerb = margerb;
+        this.chargement = chargement;
+        this.mid = mid;
+        this.rb = rb;
+        this.vb = vb;
+        this.acs = acs;
+        this.vcs = vcs;
+        this.source = source;
+        this.devise = devise;
+        this.margevb = margevb;
+        this.datecoursBamTemp = datecoursBamTemp;
+    }
 
     public CoursBamTemp() {
         // Obligatoire pour JPA
     }
 
 
-    public CoursBamTemp(long idCoursBamTemp, BigDecimal coursrb, BigDecimal coursvb, BigDecimal margerb, BigDecimal margevb,  Calendar datecoursBamTemp , EtatCours etatCoursBam,Devise devise , ChargementCourBam chargement ) {
+    public CoursBamTemp(long idCoursBamTemp, BigDecimal coursrb, BigDecimal coursvb, BigDecimal margerb, BigDecimal margevb,  Calendar datecoursBamTemp , EtatCours etatCoursBam,Devise devise , ChargementCoursBam chargement ) {
         this.idCoursBamTemp = idCoursBamTemp;
         this.coursrb = coursrb;
         this.coursvb = coursvb;
@@ -54,6 +80,53 @@ public class CoursBamTemp implements Serializable {
         this.chargement = chargement ;
     }
 
+    public BigDecimal getMid() {
+        return mid;
+    }
+
+    public void setMid(BigDecimal mid) {
+        this.mid = mid;
+    }
+
+    public BigDecimal getRb() {
+        return rb;
+    }
+
+    public void setRb(BigDecimal rb) {
+        this.rb = rb;
+    }
+
+    public BigDecimal getVb() {
+        return vb;
+    }
+
+    public void setVb(BigDecimal vb) {
+        this.vb = vb;
+    }
+
+    public BigDecimal getAcs() {
+        return acs;
+    }
+
+    public void setAcs(BigDecimal acs) {
+        this.acs = acs;
+    }
+
+    public BigDecimal getVcs() {
+        return vcs;
+    }
+
+    public void setVcs(BigDecimal vcs) {
+        this.vcs = vcs;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public EtatCours getEtatCoursBam() {
         return etatCoursBam;
@@ -124,11 +197,11 @@ public class CoursBamTemp implements Serializable {
         this.margevb = margevb;
     }
 
-    public ChargementCourBam getChargement() {
+    public ChargementCoursBam getChargement() {
         return chargement;
     }
 
-    public void setChargement(ChargementCourBam chargement) {
+    public void setChargement(ChargementCoursBam chargement) {
         this.chargement = chargement;
     }
 

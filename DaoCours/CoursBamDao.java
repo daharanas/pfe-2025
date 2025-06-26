@@ -7,6 +7,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class CoursBamDao implements ICoursBamDao {
 
     @Override
     public List<CoursBam> findByCriteria(CoursFilter filter, int offset, int maxResults) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<String, Object>();
         StringBuilder jpql = new StringBuilder("SELECT c FROM CoursBam c WHERE 1=1");
         buildWhereClause(filter, params, jpql);
         jpql.append(" ORDER BY c.datecours DESC");
@@ -29,10 +30,16 @@ public class CoursBamDao implements ICoursBamDao {
 
         return query.getResultList();
     }
+    public List<CoursBam> findByChargementId(Long idChargement) {
+        String jpql = "SELECT c FROM CoursBam c WHERE c.chargementCoursBam.idCoursChargement = :idChargement";
+        Query query = em.createQuery(jpql);
+        query.setParameter("idChargement", idChargement);
+        return query.getResultList();
+    }
 
     @Override
     public Long countByCriteria(CoursFilter filter) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<String, Object>();
         StringBuilder jpql = new StringBuilder("SELECT COUNT(c) FROM CoursBam c WHERE 1=1");
         buildWhereClause(filter, params, jpql);
 

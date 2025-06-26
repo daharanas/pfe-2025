@@ -10,4 +10,5 @@ public interface ICoursBamDao {
     Long countByCriteria(CoursFilter filter);
     CoursBam findById(Long id);
     CoursBam save(CoursBam entity);
+    List<CoursBam> findByChargementId(Long idChargement);
 }

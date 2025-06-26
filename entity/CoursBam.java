@@ -9,7 +9,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name="COURS_BAM")
@@ -20,7 +19,7 @@ public class CoursBam implements Serializable {
     @SequenceGenerator(name="COURS_BAM_IDCOURSBAM_GENERATOR", sequenceName="S_COURS_BAM")
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="COURS_BAM_IDCOURSBAM_GENERATOR")
     @Column(unique=true, nullable=false, precision=6)
-    private long idcoursbam;
+    private Long idcoursbam;
     @Column(precision=9, scale=6)
     private BigDecimal coursrb;
 
@@ -52,15 +51,32 @@ public class CoursBam implements Serializable {
 
     @Column(name="MRV_MAX",precision=5, scale=4)
     private BigDecimal margeVenteMax;
+    private ChargementCoursBam chargement ;
+    @Column(name="MID",precision=3, scale=2)
+    private BigDecimal mid;
+    @Column(name="RB",precision=3, scale=2)
+    private BigDecimal rb;
+    @Column(name="VB",precision=3, scale=2)
+    private BigDecimal vb;
+    @Column(name="ACS",precision=3, scale=2)
+    private BigDecimal acs;
+    @Column(name="VCS",precision=3, scale=2)
+    private BigDecimal vcs;
+    @Column(name="SOURCE",precision=3, scale=2)
+    private String source;
     @ManyToOne
     @JoinColumn(name="IDDEVISE", nullable=false)
     private Devise devise;
+    @ManyToOne
+    @JoinColumn(name = "ID_COURS_CHARGEMENT") // FK vers ChargementCourBam
+    private ChargementCoursBam chargementCoursBam;
+
 
     public CoursBam() {
 
     }
 
-    public CoursBam(long idcoursbam, BigDecimal coursrb, BigDecimal coursvb, BigDecimal coursMidBam, BigDecimal coursMinBam, BigDecimal coursMaxBam, BigDecimal margeAchatMaxBam, BigDecimal margeVenteMaxBam, BigDecimal margeAchatMax, BigDecimal margeVenteMax , Devise devise ,EtatCours etatCoursBam , Date datecoursbam ) {
+    public CoursBam(long idcoursbam, BigDecimal coursrb, BigDecimal coursvb, BigDecimal coursMidBam, BigDecimal coursMinBam, BigDecimal coursMaxBam, BigDecimal margeAchatMaxBam, BigDecimal margeVenteMaxBam, BigDecimal margeAchatMax, BigDecimal margeVenteMax , Devise devise ,EtatCours etatCoursBam , Date datecoursbam ,BigDecimal mid, BigDecimal rb, BigDecimal vb, BigDecimal acs, BigDecimal vcs, String source ) {
         this.idcoursbam = idcoursbam;
         this.coursrb = coursrb;
         this.coursvb = coursvb;
@@ -74,7 +90,77 @@ public class CoursBam implements Serializable {
         this.margeAchatMax = margeAchatMax;
         this.margeVenteMax = margeVenteMax;
         this.devise = devise ;
+        this.mid = mid;
+        this.rb = rb;
+        this.vb = vb;
+        this.acs = acs;
+        this.vcs = vcs;
+        this.source = source;
 
+    }
+
+    public ChargementCoursBam getChargement() {
+        return chargement;
+    }
+
+    public void setChargement(ChargementCoursBam chargement) {
+        this.chargement = chargement;
+    }
+
+    public BigDecimal getMid() {
+        return mid;
+    }
+
+    public void setMid(BigDecimal mid) {
+        this.mid = mid;
+    }
+
+    public BigDecimal getRb() {
+        return rb;
+    }
+
+    public void setRb(BigDecimal rb) {
+        this.rb = rb;
+    }
+
+    public BigDecimal getVb() {
+        return vb;
+    }
+
+    public void setVb(BigDecimal vb) {
+        this.vb = vb;
+    }
+
+    public BigDecimal getAcs() {
+        return acs;
+    }
+
+    public void setAcs(BigDecimal acs) {
+        this.acs = acs;
+    }
+
+    public BigDecimal getVcs() {
+        return vcs;
+    }
+
+    public void setVcs(BigDecimal vcs) {
+        this.vcs = vcs;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public ChargementCoursBam getChargementCoursBam() {
+        return chargementCoursBam;
+    }
+
+    public void setChargementCoursBam(ChargementCoursBam chargementCoursBam) {
+        this.chargementCoursBam = chargementCoursBam;
     }
 
     public Date getDateCoursBam() {
@@ -85,11 +171,11 @@ public class CoursBam implements Serializable {
         this.dateCoursBam = dateCoursBam;
     }
 
-    public long getIdcoursbam() {
+    public Long getIdcoursbam() {
         return idcoursbam;
     }
 
-    public void setIdcoursbam(long idcoursbam) {
+    public void setIdcoursbam(Long idcoursbam) {
         this.idcoursbam = idcoursbam;
     }
 

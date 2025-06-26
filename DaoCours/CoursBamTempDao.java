@@ -7,6 +7,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class CoursBamTempDao implements ICoursBamTempDao {
 
     @Override
     public List<CoursBamTemp> findByCriteria(CoursFilter filter , int offset, int maxResults) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<String, Object>();
         StringBuilder jpql = new StringBuilder("SELECT c FROM CoursBamTemp c WHERE 1=1");
         buildWhereClause(filter, params, jpql);
         jpql.append(" ORDER BY c.datecours DESC");
@@ -32,7 +33,7 @@ public class CoursBamTempDao implements ICoursBamTempDao {
 
     @Override
     public Long countByCriteria( CoursFilter filter) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<String, Object>();
         StringBuilder jpql = new StringBuilder("SELECT COUNT(c) FROM CoursBamTemp c WHERE 1=1");
         buildWhereClause(filter, params, jpql);
 

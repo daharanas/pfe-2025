@@ -1,11 +1,7 @@
 package ma.eai.titre.manex.batchs.ChargCoursAutoBam.service;
 
-import ma.eai.titre.manex.batchs.ChargCoursAutoBam.ChargementCoursBam;
-import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.ChargementCourBam;
-import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.enums.StatusChargement;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.ChargementCoursBam;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.exception.ValidationException;
-
-import java.util.List;
 
 public interface IChargmentCoursBamService {
     // Consultation
@@ -13,7 +9,7 @@ public interface IChargmentCoursBamService {
     Flux getChargementById(Flux flux);
 
     // Création / mise à jour
-    void enregistrerChargement(ChargementCourBam entity);
+    void enregistrerChargement(ChargementCoursBam entity);
 
     // Accès aux cours
     Flux getCoursParChargement(Flux flux);

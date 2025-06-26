@@ -1,18 +1,15 @@
 package ma.eai.titre.manex.batchs.ChargCoursAutoBam.service;
 
-import ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours.CoursDao;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours.ICoursBamDao;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.DaoCours.ICoursBamTempDao;
-import ma.eai.titre.manex.batchs.ChargCoursAutoBam.Dto.CoursBamDto;
-import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.ChargementCourBam;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.CoursBam;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.entity.CoursBamTemp;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.exception.ValidationException;
 import ma.eai.titre.manex.batchs.ChargCoursAutoBam.filter.CoursFilter;
+import ma.eai.titre.manex.batchs.ChargCoursAutoBam.xmlMapping.Flux;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import java.util.InputMismatchException;
 import java.util.List;
 
@@ -61,7 +58,7 @@ public class CoursBamService implements ICoursBamService {
         List<CoursBamTemp> resultats = coursBamTempDao.findByCriteria(filter, pager.getIndex() - 1, pager.getPageSize());
 
         fluxSortie.getObjet().setPager(pager);
-        fluxSortie.getObjet().setCoursBamTemps(resultats);
+        fluxSortie.getObjet().setCoursBamTemp(resultats);
         fluxSortie.getObjet().setNbResultats(total);
         return fluxSortie;
     }
